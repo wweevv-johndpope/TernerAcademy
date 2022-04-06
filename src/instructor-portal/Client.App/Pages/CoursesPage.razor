@@ -1,0 +1,83 @@
+﻿@page "/courses"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="mr-2 align-self-center" Typo="Typo.h5" GutterBottom="false">Courses</MudText>
+            <MudIconButton Class="mr-2 align-self-center" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="InvokeCreateCourseModal" />
+            <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchCoursesAsync" />
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="mr-4 align-self-center" Typo="Typo.h4" GutterBottom="false">Courses</MudText>
+            <MudIconButton Class="mr-2 align-self-center" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" OnClick="InvokeCreateCourseModal" />
+            <MudIconButton Class="align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small" OnClick="FetchCoursesAsync" />
+        </MudHidden>
+    </div>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False">
+    @if (!IsLoaded)
+    {
+        <MudGrid Spacing="4" Class="mt-4">
+            @for (int i = 0; i < 9; i++)
+            {
+                <MudItem xs="12" md="6" xl="3">
+                    <MudCard Elevation="10" Class="grey darken-4">
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="300px" Width="100%" />
+                        <MudCardContent>
+                            <MudSkeleton Animation="Animation.Wave" Height="60px" />
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+    else
+    {
+        @if (!Courses.Any())
+        {
+            <MudText Typo="Typo.h5" Class="my-4">
+                Hmm.. You've created any course yet..
+            </MudText>
+        }
+        else
+        {
+            <MudGrid Spacing="4" Class="mt-4">
+                @foreach (var course in Courses)
+                {
+                    <MudItem xs="12" md="6" xl="3">
+                        <MudCard Elevation="10" Class="grey darken-4 cursor-pointer" @onclick="(() => OnCourseCardClicked(course))">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>@course.Name.ToUpper()</b></MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardMedia Image="@course.ThumbnailImageUri" Height="300" />
+                            <MudCardContent>
+                                <div class="d-flex justify-space-between">
+                                    <MudText Typo="Typo.body1" Color="Color.Primary" Class="align-self-center text-limit-1">@course.ShortDescription</MudText>
+                                    <MudChip Class="align-self-center cursor-pointer" Size="Size.Medium" Color="Color.Secondary">
+                                        <MudText Class="mr-2" Typo="Typo.body1">
+                                            @course.PriceInTFuel
+                                        </MudText>
+                                        <MudAvatar Style="height:20px; width:20px;" Color="Color.Secondary" Image="@AppIcons.TFuelLogo"></MudAvatar>
+                                    </MudChip>
+                                </div>
+                                <MudChip Class="ma-0 my-2 mr-2" Size="Size.Small" Color="Color.Primary"><b>@course.ListingStatus.GetDescription()</b></MudChip>
+                                <MudChip Class="ma-0 my-2 mr-2" Size="Size.Small" Variant="Variant.Text" Color="Color.Secondary">@course.Language.ToUpper()</MudChip>
+
+                                @if (course.ListingStatus == CourseListingStatus.Approved)
+                                {
+                                    <MudChip Class="ma-0 my-2 mr-2" Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@course.EnrolledCount <MudIcon Icon="@Icons.Material.Filled.Groups" Style="font-size: 1rem" Class="ml-2" /> </MudChip>
+                                    <MudChip Class="ma-0 my-2 mr-2" Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary"> <MudIcon Icon="@Icons.Material.Filled.StarRate" Style="font-size: 1rem" Class="mr-1" /> @course.AverageRating.ToString("N2") (@course.RatingCount)</MudChip>
+                                }
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    }
+</MudContainer>

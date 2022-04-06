@@ -1,0 +1,72 @@
+﻿@page "/courses"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="mr-4 align-self-center" Typo="Typo.h5" GutterBottom="false">My Courses</MudText>
+            <MudIconButton Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Icon="@Icons.Material.Filled.Refresh" OnClick="FetchCoursesAsync"/>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="mr-4 align-self-center" Typo="Typo.h4" GutterBottom="false">My Courses</MudText>
+            <MudIconButton Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Icon="@Icons.Material.Filled.Refresh" OnClick="FetchCoursesAsync" />
+        </MudHidden>
+    </div>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False">
+    @if (!IsLoaded)
+    {
+        <MudGrid Spacing="4" Class="mt-4">
+            @for (int i = 0; i < 9; i++)
+            {
+                <MudItem xs="12" md="6" xl="3">
+                    <MudCard Elevation="10" Class="grey darken-4">
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="300px" Width="100%" />
+                        <MudCardContent>
+                            <MudSkeleton Animation="Animation.Wave" Height="60px" />
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+    else
+    {
+        @if (!Courses.Any())
+        {
+            <MudText Typo="Typo.h5" Class="my-4">
+                You haven't bought any course yet...
+            </MudText>
+        }
+        else
+        {
+            <MudGrid Spacing="4" Class="mt-4">
+                @foreach (var course in Courses)
+                {
+                    <MudItem xs="12" md="6" xl="3">
+                        <MudCard Elevation="10" Class="grey darken-4 cursor-pointer" @onclick="(() => OnCourseCardClicked(course))">
+                            <MudCardMedia Image="@course.CourseThumbnailImageUri" Height="300" />
+                            <MudCardContent>
+                                <div class="d-flex justify-space-between">
+                                    <MudText Typo="Typo.body1" Color="Color.Primary" Class="align-self-center text-limit-1"><b>@course.CourseName.ToUpper()</b></MudText>
+                                </div>
+                                <div class="mt-2 d-flex">
+                                    <MudAvatar Size="Size.Small" Image="@course.InstructorProfilePictureUri" Class="mr-2 blue-grey darken-4"></MudAvatar>
+                                    <MudText Typo="Typo.body2" Class="align-self-center shades-text text-white text-limit-1">@course.Instructor</MudText>
+                                </div>
+                                <div class="align-self-center mt-2 d-flex flex-wrap">
+                                    <MudChip Class="my-1 mr-1" Size="Size.Small" Variant="Variant.Text" Color="Color.Secondary">@course.CourseLanguage</MudChip>
+                                    <MudChip Class="my-1 mr-1" Size="Size.Small" Variant="Variant.Text" Color="Color.Secondary">@course.CourseLevel</MudChip>
+                                    <MudChip Class="my-1 mr-1" Size="Size.Small" Variant="Variant.Text" Color="Color.Secondary">@course.DateEnrolled.ToCurrentTimeZone().ToString(ClientConstants.ShortDateTimeFormat)</MudChip>
+                                </div>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+
+    }
+</MudContainer>

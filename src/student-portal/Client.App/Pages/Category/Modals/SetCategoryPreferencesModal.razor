@@ -1,0 +1,31 @@
+﻿<EditForm Model="@Model" OnValidSubmit="SetAsync">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+        <DialogContent>
+            <MudContainer MaxWidth="MaxWidth.False">
+                <MudGrid Class="pt-0 pb-4 px-2">
+                    <MudItem xs="12">
+                        <MudChipSet MultiSelection="true" Filter="true" SelectedChipsChanged="OnSelectedChipsChanged">
+                            @foreach (var category in Categories)
+                            {
+                                <MudChip Variant="Variant.Text" Color="Color.Primary" Tag="@category">@category.Category</MudChip>
+                            }
+                        </MudChipSet>
+                    </MudItem>
+                </MudGrid>
+            </MudContainer>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" ButtonType="ButtonType.Submit" Color="Color.Secondary">
+                @if (IsProcessing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    <span>UPDATE</span>
+                }
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>

@@ -1,0 +1,215 @@
+﻿@page "/"
+
+@attribute [Authorize]
+
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="align-self-center" Typo="Typo.h5" GutterBottom="false">Dashboard</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="align-self-center" Typo="Typo.h4" GutterBottom="false">Dashboard</MudText>
+        </MudHidden>
+    </div>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <MudGrid Spacing="4" Class="py-8">
+        <MudItem xs="12">
+            <MudText Typo="HeaderTypo" Class="text-white">Terner Academy Stats</MudText>
+        </MudItem>
+        <MudItem xs="12" md="6" xl="3">
+            <MudCard Elevation="10" Class="grey darken-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>Registered Students</b></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Number of Registered Students in Terner Academy">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="NumberValueTypo" Align="Align.Right" Class="py-0 shades-text text-white text-limit-1">@Dashboard.RegisteredStudentCount</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" xl="3">
+            <MudCard Elevation="10" Class="grey darken-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>Total Published Courses</b></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Number of Published Courses in Terner Academy">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="NumberValueTypo" Align="Align.Right" Class="py-0 shades-text text-white text-limit-1">@Dashboard.TotalListedCourseCount</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" xl="3">
+            <MudCard Elevation="10" Class="grey darken-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>Total Platform Payouts</b></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Total Platform Payout in TFuel to all Instructors (equivalent to 90% of the price of the courses bought by every students)">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="NumberValueTypo" Align="Align.Right" Class="d-flex flex-row-reverse align-self-center py-0 shades-text text-white text-limit-1">
+                        <MudAvatar Style="@TFuelLogoStyle" Class="ml-4 grey darken-3 align-self-center" Image="@AppIcons.TFuelLogo"></MudAvatar> @Dashboard.TotalAmountPayouts.ToString("N2")
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" xl="3">
+            <MudCard Elevation="10" Class="grey darken-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>Total Amount Burned</b></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Total Amount Burned in TFuel (equivalent to 2% of the price of the courses bought by every students)">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="NumberValueTypo" Align="Align.Right" Class="d-flex flex-row-reverse align-self-center py-0 shades-text text-white text-limit-1">
+                        <MudAvatar Style="@TFuelLogoStyle" Class="ml-4 grey darken-3 align-self-center" Image="@AppIcons.TFuelLogo"></MudAvatar> @Dashboard.TotalAmountBurned.ToString("N2")
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Class="py-4">
+        <MudItem xs="12">
+            <MudText Typo="HeaderTypo" Class="text-white">Instructor Stats</MudText>
+        </MudItem>
+
+        <MudItem xs="12" md="6" xl="3">
+            <MudCard Elevation="10" Class="grey darken-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>Enrolled Students (Unique)</b></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Unique Students that has enrolled in your Published Courses">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="NumberValueTypo" Align="Align.Right" Class="py-0 shades-text text-white text-limit-1">@Dashboard.InstructorUniqueStudentCount</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" xl="3">
+            <MudCard Elevation="10" Class="grey darken-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>Total Course Purchased</b></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Number of Students that have bought your Published Courses">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="NumberValueTypo" Align="Align.Right" Class="py-0 shades-text text-white text-limit-1">@Dashboard.InstructorCoursePurchaseCount</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" xl="3">
+            <MudCard Elevation="10" Class="grey darken-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>Total Published Courses</b></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Number of your Published Courses">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="NumberValueTypo" Align="Align.Right" Class="py-0 shades-text text-white text-limit-1">@Dashboard.InstructorCourseCount</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6" xl="3">
+            <MudCard Elevation="10" Class="grey darken-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>Total Published Course Lessons</b></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Number of lessons of your Published Courses">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="NumberValueTypo" Align="Align.Right" Class="py-0 shades-text text-white text-limit-1">@Dashboard.InstructorCourseLessonCount</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6">
+            <MudCard Elevation="10" Class="grey darken-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>Average Ratings (All Courses)</b></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Total Average Ratings for your all rated Published Courses (1-5)">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="NumberValueTypo" Align="Align.Right" Class="py-0 shades-text text-white text-limit-1"> @String.Format("{0:N2}", Dashboard.InstructorAverageRating)</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6">
+            <MudCard Elevation="10" Class="grey darken-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="text-limit-1"><b>Total Earnings (All Courses)</b></MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="Total Earnings from your Published Courses in TFuel">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="NumberValueTypo" Align="Align.Right" Class="d-flex flex-row-reverse align-self-center py-0 shades-text text-white text-limit-1">
+                        <MudAvatar Style="@TFuelLogoStyle" Class="ml-4 grey darken-3 align-self-center" Image="@AppIcons.TFuelLogo"></MudAvatar> @Dashboard.InstructorTotalEarnings.ToString("N2")
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+</MudContainer>

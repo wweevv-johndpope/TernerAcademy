@@ -1,0 +1,67 @@
+﻿<EditForm Model="@Model" OnValidSubmit="UpdateAsync">
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+        <DialogContent>
+            <MudContainer MaxWidth="MaxWidth.False" Style="@DialogContentContainerStyle">
+                <MudGrid Class="pt-0 pb-4 px-2">
+                    <MudItem xs="12">
+                        <MudTextField T="string" Variant="Variant.Outlined" For="@(() => Model.Name)" Disabled="IsProcessing" @bind-Value="Model.Name" Placeholder="Name" Label="Name" />
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudTextField T="string" Variant="Variant.Outlined" For="@(() => Model.ShortDescription)" Disabled="IsProcessing" @bind-Value="Model.ShortDescription" Placeholder="Short Description" Label="Short Description" />
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudTextField T="string" Lines="4" Variant="Variant.Outlined" For="@(() => Model.Description)" Disabled="IsProcessing" @bind-Value="Model.Description" Placeholder="Description" Label="Description" />
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudSelect T="string" Disabled="IsProcessing" Label="Level" Variant="Variant.Outlined" MultiSelection="false" @bind-Value="Model.Level">
+                            @foreach (var level in @Application.Common.Constants.AppConstants.CourseLevel)
+                            {
+                                <MudSelectItem Value="@level">@level</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudSelect T="int" Disabled="IsProcessing" Label="Language" Variant="Variant.Outlined" MultiSelection="false" @bind-Value="Model.LanguageId">
+                            @foreach (var language in CourseLanguages)
+                            {
+                                <MudSelectItem Value="@language.Id">@language.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudTextField T="double" Variant="Variant.Outlined" For="@(() => Model.PriceInTFuel)" Disabled="IsProcessing" @bind-Value="Model.PriceInTFuel" Placeholder="Price (TFuel)" Label="Price (TFuel)" />
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudSelect T="int" Disabled="IsProcessing" Lines="2" Label="Topics" Variant="Variant.Outlined" MultiSelection="true" @bind-SelectedValues="Model.TopicIds" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionTopicText))">
+                            @foreach (var categoryTopic in CourseCategoryTopics)
+                            {
+                                <MudSelectItem Value="@categoryTopic.TopicId">@categoryTopic.Category - @categoryTopic.Topic</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+            </MudContainer>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Text" Disabled="IsProcessing" OnClick="Cancel">CANCEL</MudButton>
+            <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" ButtonType="ButtonType.Submit" Color="Color.Secondary">
+                @if (IsProcessing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    <span>UPDATE</span>
+                }
+            </MudButton>
+
+        </DialogActions>
+    </MudDialog>
+</EditForm>

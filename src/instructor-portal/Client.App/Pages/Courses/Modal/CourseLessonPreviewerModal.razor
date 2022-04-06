@@ -1,0 +1,48 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" Style="max-height: 80vh; overflow-y: scroll">
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+        <DialogContent>
+            <MudGrid Class="pt-0 pb-4 px-2">
+                @if (!IsLoaded)
+                {
+                    <MudItem xs="12">
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="100px" Width="100%" />
+                    </MudItem>
+                }
+                else
+                {
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.body1" Class="text-white"><b>Name:</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mt-2">@CourseLesson.Name</MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.body1" Class="text-white"><b>Playable on Course Preview:</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mt-2">
+                                @if (CourseLesson.IsPreviewable)
+                                {
+                                    <span>Yes</span>
+                                }
+                                else
+                                {
+                                    <span>No</span>
+                                }
+                            </MudText>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <div>
+                            <MudText Typo="Typo.body1" Class="text-white"><b>Notes:</b></MudText>
+                            <MudText Typo="Typo.body1" Class="text-white mt-2" Align="Align.Justify">
+                                @((MarkupString)@CourseLesson.Notes.ToEmptyIfNull().Replace(Environment.NewLine,"<br />"))
+                            </MudText>
+                        </div>
+                    </MudItem>
+                }
+            </MudGrid>
+        </DialogContent>
+    </MudDialog>
+</MudContainer>

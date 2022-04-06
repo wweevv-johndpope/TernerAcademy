@@ -1,0 +1,97 @@
+﻿@page "/profile"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="align-self-center" Typo="Typo.h5" GutterBottom="false">My Profile</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="align-self-center" Typo="Typo.h4" GutterBottom="false">My Profile</MudText>
+        </MudHidden>
+    </div>
+</MudContainer>
+
+@if (!IsLoaded)
+{
+
+}
+else
+{
+    <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+        <MudPaper Square="true" Elevation="10" Class="d-flex flex-wrap pa-4 grey darken-4">
+            <div class="align-self-center mr-4" style="position:relative" @onmouseover="(() => ToggleProfilePhotoOvelay(true))" @onmouseleave="(() => ToggleProfilePhotoOvelay(false))">
+                <MudAvatar Size="Size.Large" Style="height:120px; width:120px;" Class="grey darken-4" Image="@Profile.ProfilePictureUri"></MudAvatar>
+
+                <InputFile id="Photo1" OnChange="((InputFileChangeEventArgs args) => OnProfilePictureChange(args))" hidden accept=".jpg, .jpeg, .png" />
+
+                <MudOverlay Visible="IsProfilePhotoOverlayVisible" Absolute="true">
+                    @if (!IsUploadingProfilePhoto)
+                    {
+                        <MudFab HtmlTag="label" Color="Color.Primary" Icon="@Icons.Filled.CloudUpload" for="Photo1" />
+                    }
+                </MudOverlay>
+
+                <MudOverlay Visible="IsUploadingProfilePhoto" DarkBackground="true" Absolute="true">
+                    <MudProgressCircular Class="ms-n1" Indeterminate="true" Color="Color.Primary" />
+                </MudOverlay>
+            </div>
+
+
+            <div Class="align-self-center ml-2 my-4">
+                <MudText Typo="Typo.h4" Class="text-white">@Profile.Name</MudText>
+                <MudText Typo="Typo.subtitle2" Class="text-white">@Profile.CompanyName</MudText>
+                <MudText Typo="Typo.subtitle2" Class="text-white">@Profile.Email</MudText>
+                <MudButton Class="my-2 mr-2" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="(() => InvokeUpdateProfileModalAsync())">Update Profile</MudButton>
+                <MudButton Class="my-2 mr-2" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="(() => InvokeChangePasswordModal())">Change Password</MudButton>
+            </div>
+        </MudPaper>
+
+        <MudPaper Square="true" Elevation="10" Class="mt-4 pa-4 grey darken-4">
+            <MudText Typo="Typo.h5" Class="shades-text text-white">
+                Bio
+                <MudIconButton Class="align-self-center ml-2" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="(() => InvokeUpdateProfileBioModalAsync())" />
+            </MudText>
+
+            <div class="my-4">
+                <MudText Typo="Typo.body1" Class="text-white mt-2">
+                    @if (!string.IsNullOrEmpty(Profile.Bio))
+                    {
+                        @((MarkupString)@Profile.Bio.ToEmptyIfNull().Replace(Environment.NewLine,"<br />"))
+                    }
+                    else
+                    {
+                        <span>No Bio set yet...</span>
+                    }
+                </MudText>
+            </div>
+        </MudPaper>
+
+        <MudPaper Square="true" Elevation="10" Class="mt-4 pa-4 grey darken-4">
+            <MudText Typo="Typo.h5" Class="shades-text text-white">
+                Socials
+                <MudIconButton Class="align-self-center ml-2" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Icon="@Icons.Material.Filled.Add" OnClick="(() => InvokeCreateCommunityModalAsync())" />
+            </MudText>
+
+            <div Class="align-self-center my-4">
+                <div>
+                    @foreach (var community in Profile.Communities)
+                    {
+                        var icon = @Icons.Custom.Brands.MudBlazor;
+
+                        switch (community.Platform)
+                        {
+                            case "Twitter": icon = @Icons.Custom.Brands.Twitter; break;
+                            case "Telegram": icon = @Icons.Custom.Brands.Telegram; break;
+                            case "Instagram": icon = @Icons.Custom.Brands.Instagram; break;
+                        }
+
+                        <MudChip Class="my-1 mr-1" Color="Color.Primary" Variant="Variant.Text" Icon="@icon" OnClick="(() => InvokeUpdateCommunityModalAsync(community))" CloseIcon="@Icons.Material.Filled.Delete" OnClose="(() => OnInvokeDeleteCommunityModalAsync(community))" Size="Size.Medium">@string.Concat("@", community.HandleName)</MudChip>
+                    }
+                </div>
+
+            </div>
+        </MudPaper>
+    </MudContainer>
+}

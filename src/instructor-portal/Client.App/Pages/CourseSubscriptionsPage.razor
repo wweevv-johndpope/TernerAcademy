@@ -1,0 +1,149 @@
+﻿@page "/course/subscriptions"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="align-self-center" Typo="Typo.h5" GutterBottom="false">Subscriptions</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="align-self-center" Typo="Typo.h4" GutterBottom="false">Subscriptions</MudText>
+        </MudHidden>
+    </div>
+</MudContainer>
+
+
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    @if (!IsLoaded)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        <MudSkeleton Class="mt-4" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="560px" Width="100%" />
+    }
+    else
+    {
+        @if (!ListedCourses.Any())
+        {
+            <MudText Typo="Typo.h5" Class="my-4">
+                You haven't published any course yet...
+            </MudText>
+        }
+        else
+        {
+            <MudSelect T="int" Label="Course" Variant="Variant.Outlined" MultiSelection="false" Value="SelectedCourseId" ValueChanged="OnCourseValueChanged">
+                @foreach (var course in ListedCourses)
+                {
+                    <MudSelectItem Value="@course.Id">@course.Name</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudPaper Square="true" Elevation="0" Class="mt-4 px-0 py-4">
+                @if (IsFetchingCourseSubscription)
+                {
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="48px" Width="100%" />
+
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <MudSkeleton Class="mt-2" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="100px" Width="100%" />
+                    }
+                }
+                else
+                {
+                    @if (!CourseSubscription.Subscriptions.Any())
+                    {
+                        <MudText Typo="Typo.h5">
+                            No Subscriptions yet...
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudText Class="d-flex flex-wrap align-self-center" GutterBottom="false" Typo="Typo.h6" Color="Color.Primary">
+                            Total Earnings:
+                            @CourseSubscription.TotalEarnings.ToString("N2")
+                            <MudAvatar Style="height:20px; width:20px;" Class="ml-2 grey darken-3 align-self-center" Image="@AppIcons.TFuelLogo"></MudAvatar>
+                            <MudIconButton Class="ml-2 align-self-center" Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" Variant="Variant.Filled" OnClick="(() => FetchCourseSubscriptionsAsync(SelectedCourseId))" Size="Size.Small" />
+                        </MudText>
+
+                        <MudTable Items="@CourseSubscription.Subscriptions" Class="my-4 mx-0 grey darken-3" Breakpoint="Breakpoint.SmAndUp">
+                            <HeaderContent>
+                                <MudTh>Date Bought</MudTh>
+                                <MudTh>Student</MudTh>
+                                <MudTh>Student Progress</MudTh>
+                                <MudTh>Paid</MudTh>
+                                <MudTh>
+                                    Deduction
+                                    <MudTooltip Text="10% deduction from the Paid Amount for every courses bought by a student, 8% will be marked as Platform Fee that will be allocated for infrastructure, development, and marketing. The remaining 2% will be burned.">
+                                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Info" Color="Color.Default" />
+                                    </MudTooltip>
+                                </MudTh>
+                                <MudTh>Received</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>
+                                    <MudText class="d-flex align-self-center">
+                                        @context.DateSubscribed.ToCurrentTimeZone().ToString(ClientConstants.ShortDateTimeFormat)
+                                    </MudText>
+                                </MudTd>
+                                <MudTd>
+                                    <div>
+                                        <MudText class="d-flex align-self-center">
+                                            <MudAvatar Size="Size.Small" Class="mr-2 grey darken-3 align-self-center" Image="@context.StudentProfilePictureUri"></MudAvatar>
+                                            @context.StudentName
+                                        </MudText>
+                                    </div>
+                                </MudTd>
+                                <MudTd>
+                                    <MudText class="d-flex align-self-center">
+                                        @String.Format("{0:P2}", context.Progress)
+                                    </MudText>
+                                </MudTd>
+                                <MudTd>
+                                    <MudText class="d-flex align-self-center">
+                                        @context.Price.ToString("N2")
+                                        <MudAvatar Style="height:20px; width:20px;" Class="ml-2 grey darken-3 align-self-center" Image="@AppIcons.TFuelLogo"></MudAvatar>
+                                    </MudText>
+                                </MudTd>
+
+                                <MudTd>
+                                    @if (!context.AmountBurn.HasValue)
+                                    {
+                        <MudText class="d-flex align-self-center">Processing</MudText>
+                                    }
+                                    else
+                                    {
+                        <MudText class="d-flex flex-wrap align-self-center">
+                            <span class="align-self-center"> Platform Fee: @((context.Price - context.AmountCashout.Value - context.AmountBurn.Value).ToString("N2"))  </span>
+                            <MudAvatar Style="height:15px; width:15px;" Class="mx-2 grey darken-3 align-self-center" Image="@AppIcons.TFuelLogo"></MudAvatar>
+                        </MudText>
+                        <MudText class="mt-2 d-flex flex-wrap align-self-center">
+                            <span class="align-self-center">Burned: @context.AmountBurn.Value.ToString("N2") </span>
+                            <MudAvatar Style="height:15px; width:15px;" Class="mx-2 grey darken-3 align-self-center" Image="@AppIcons.TFuelLogo"></MudAvatar>
+                            <MudIconButton Icon="@Icons.Material.Filled.ReceiptLong" Variant="Variant.Filled" Color="Color.Primary" Class="align-self-center" Size="Size.Small" OnClick="(() => InvokeTransactionPreviewerModal(context.BurnTx))"></MudIconButton>
+                        </MudText>
+                                    }
+                </MudTd>
+
+                <MudTd>
+                    @if (!context.AmountCashout.HasValue)
+                                    {
+                        <MudText class="d-flex align-self-center">Processing</MudText>
+                                    }
+                                    else
+                                    {
+                        <MudText class="d-flex align-self-center">
+                            <span class="align-self-center">@context.AmountCashout.Value.ToString("N2") </span>
+                            <MudAvatar Style="height:20px; width:20px;" Class="mx-2 grey darken-3 align-self-center" Image="@AppIcons.TFuelLogo"></MudAvatar>
+                            <MudIconButton Icon="@Icons.Material.Filled.ReceiptLong" Variant="Variant.Filled" Color="Color.Primary" Class="align-self-center" Size="Size.Small" OnClick="(() => InvokeTransactionPreviewerModal(context.CashoutPaymentTx))"></MudIconButton>
+                        </MudText>
+                                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+                    }
+                }
+            </MudPaper>
+        }
+
+    }
+</MudContainer>

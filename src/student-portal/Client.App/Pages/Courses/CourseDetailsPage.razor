@@ -1,0 +1,148 @@
+﻿@page "/course/{CourseId:int}"
+
+@attribute [Authorize]
+
+@if (IsLoaded)
+{
+    <MudContainer MaxWidth="MaxWidth.False">
+        <div class="d-flex">
+            <MudBreadcrumbs Class="px-0" Items="BreadcrumbItems" Separator=">"></MudBreadcrumbs>
+        </div>
+    </MudContainer>
+}
+
+<MudContainer MaxWidth="MaxWidth.False">
+    @if (!IsLoaded)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        <MudSkeleton Class="mt-4" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="216px" Width="100%" />
+
+        <MudSkeleton Class="mt-4" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="1200px" Width="100%" />
+    }
+    else
+    {
+        <MudText Typo="Typo.h5" Color="Color.Primary">@Course.Name</MudText>
+        <MudPaper Square="true" Elevation="10" Class="mt-2 d-flex flex-column flex-wrap pa-4 grey darken-4">
+            <div>
+                <div class="d-flex mt-2">
+                    <MudAvatar Size="Size.Small" Class="grey darken-4 align-self-center mr-4 cursor-pointer" Image="@Course.InstructorProfilePictureUri" @onclick="InvokeInstructorPreviewerModal"></MudAvatar>
+
+                    <div class="align-self-center">
+                        <MudText Typo="Typo.body1" Class="cursor-pointer" @onclick="InvokeInstructorPreviewerModal">@Course.InstructorName</MudText>
+                    </div>
+                </div>
+
+                <MudText Typo="Typo.body1" Class="d-flex flex-wrap text-white mt-3"><MudIcon Icon="@Icons.Material.Filled.Update" Class="mr-4" /> @Course.LastUpdated.ToCurrentTimeZone().ToString(ClientConstants.LongDateTimeFormat)</MudText>
+                <MudText Typo="Typo.subtitle1" Class="mt-2">
+                    @((MarkupString)@Course.Description.ToEmptyIfNull().Replace(Environment.NewLine,"<br />"))
+                </MudText>
+            </div>
+
+            <div class="d-flex flex-wrap mt-2">
+                @foreach (var topic in @Course.Topics.Split(','))
+                {
+                    <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@topic</MudChip>
+                }
+            </div>
+            <div class="d-flex flex-wrap mt-2">
+                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@Course.Level</MudChip>
+                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@Course.CourseLanguage</MudChip>
+                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@TimeSpan.FromMilliseconds(double.Parse(Course.Duration.ToString())).Humanize(3, countEmptyUnits:true, maxUnit: TimeUnit.Hour, minUnit: TimeUnit.Second)</MudChip>
+                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@("student".ToQuantity(Course.EnrolledCount))</MudChip>
+                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary"><MudIcon Icon="@Icons.Material.Filled.Groups" Style="font-size: 1rem" Class="mr-2" /> @("student".ToQuantity(@Course.EnrolledCount))</MudChip>
+                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary"> <MudIcon Icon="@Icons.Material.Filled.StarRate" Style="font-size: 1rem" Class="mr-1" /> @Course.AverageRating.ToString("N2") (@("student".ToQuantity(Course.RatingCount)))</MudChip>
+            </div>
+        </MudPaper>
+
+
+        <MudText Typo="Typo.h5" Color="Color.Primary" Class="mt-4">Lessons</MudText>
+        <MudPaper Square="true" Elevation="10" Class="mt-2 pa-4 grey darken-4">
+            <MudTable Items="@Course.Lessons" Class="my-4 mx-0 grey darken-3" Breakpoint="Breakpoint.None">
+                <RowTemplate>
+                    <MudTd>
+                        <div class="d-flex">
+                            <MudText class="align-self-center mr-auto cursor-pointer" Color="Color.Secondary" @onclick="(() => InvokeCourseLessonPreviewerModal(context))">@context.Name</MudText>
+                        </div>
+                    </MudTd>
+                    <MudTd>
+                        <div class="d-flex">
+                            <MudText class="align-self-center mr-auto cursor-pointer" Color="Color.Secondary" @onclick="(() => InvokeCourseLessonPreviewerModal(context))">@TimeSpan.FromMilliseconds(double.Parse(context.Duration.ToString())).Humanize(3, countEmptyUnits:true, maxUnit: TimeUnit.Hour, minUnit: TimeUnit.Second)</MudText>
+                        </div>
+                    </MudTd>
+                    <MudTd>
+                        <div class="d-flex">
+                            @if (context.IsWatched)
+                            {
+                            <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Secondary" />
+                            }
+                    </div>
+                </MudTd>
+
+            </RowTemplate>
+        </MudTable>
+    </MudPaper>
+
+        <MudText Typo="Typo.h5" Color="Color.Primary" Class="mt-4">My Course Review</MudText>
+        <MudPaper Square="true" Elevation="10" Class="mt-2 pa-4 grey darken-4">
+            @if (!Course.MyCourseSubscriptionRating.HasValue)
+            {
+                <div>
+                    <MudText Typo="Typo.body1" Class="text-white mt-2">You haven't rate the course yet. </MudText>
+                    <MudButton Class="align-self-center my-2" Color="Color.Primary" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.ChevronRight" OnClick="(() => InvokeWriteCourseReviewModalAsync())">Write a Review</MudButton>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <MudText Typo="Typo.body1" Class="d-flex flex-wrap text-white mt-2">Rating: <MudRating Class="ml-2" SelectedValue="Course.MyCourseSubscriptionRating.Value" ReadOnly="true" /></MudText>
+
+                    <MudText Typo="Typo.body1" Class="text-white mt-2">
+                        @((MarkupString)Course.MyCourseSubscriptionComment.ToEmptyIfNull().Replace(Environment.NewLine,"<br />"))
+                    </MudText>
+                    <MudButton Class="align-self-center my-2" Color="Color.Primary" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.ChevronRight" OnClick="(() => InvokeWriteCourseReviewModalAsync())">Update Review</MudButton>
+                </div>
+            }
+        </MudPaper>
+
+        <MudText Typo="Typo.h5" Color="Color.Primary" Class="mt-4">Recent Reviews</MudText>
+        <MudPaper Square="true" Elevation="10" Class="mt-2 pa-4 grey darken-4">
+            @if (!Course.Reviews.Any())
+            {
+                <div>
+                    <MudText Typo="Typo.body1" Class="text-white">No Reviews yet... </MudText>
+                </div>
+            }
+            else
+            {
+                <MudText Typo="Typo.body1">
+                    Average Rating: @Course.AverageRating.ToString("N2") (@("student".ToQuantity(Course.RatingCount)))
+                </MudText>
+                <MudTable Items="@Course.Reviews" Class="my-4 mx-0 grey darken-3" Breakpoint="Breakpoint.None">
+                    <RowTemplate>
+                        <MudTd>
+                            <div>
+                                <MudText class="d-flex flex-wrap justify-space-between align-self-center">
+                                    <div class="d-flex">
+                                        <MudAvatar Size="Size.Small" Class="mr-2 grey darken-3" Image="@context.StudentProfilePictureUri"></MudAvatar>
+                                        @context.StudentName
+                                    </div>
+                                    <MudRating SelectedValue="context.Rating" ReadOnly="true" />
+                                </MudText>
+
+                                <MudText Typo="Typo.caption" Class="mt-0">
+                                    @context.LastUpdated.ToCurrentTimeZone().ToString(ClientConstants.LongDateTimeFormat)
+                                </MudText>
+
+                                <MudText Typo="Typo.subtitle1" Class="mt-2">
+                                    @((MarkupString)context.Comment.ToEmptyIfNull().Replace(Environment.NewLine,"<br />"))
+                                </MudText>
+
+                            </div>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+
+        </MudPaper>
+    }
+</MudContainer>

@@ -1,0 +1,48 @@
+﻿<MudContainer Class="pa-0 ma-0" MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll">
+    <EditForm Model="@Model" OnValidSubmit="UpdateAsync">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+            <DialogContent>
+                <MudContainer MaxWidth="MaxWidth.False">
+                    <MudGrid Class="pt-0 pb-4 px-2">
+                        @if (!IsLoaded)
+                        {
+                            <MudItem xs="12">
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="100px" Width="100%" />
+                            </MudItem>
+                        }
+                        else
+                        {
+                            <MudItem xs="12">
+                                <MudTextField T="string" Variant="Variant.Outlined" For="@(() => Model.LessonName)" Disabled="IsProcessing" @bind-Value="Model.LessonName" Placeholder="Name of the Lesson" Label="Title" />
+                            </MudItem>
+
+                            <MudItem xs="12">
+                                <MudTextField T="string" Variant="Variant.Outlined" For="@(() => Model.LessonNotes)" Lines="7" Disabled="IsProcessing" @bind-Value="Model.LessonNotes" Placeholder="Lesson Notes" Label="Lesson Notes" />
+                            </MudItem>
+
+                            <MudItem xs="12">
+                                <MudCheckBox Color="Color.Primary" Disabled="IsProcessing" @bind-Checked="@Model.LessonIsPreviewable" Label="Playable on Course Preview?"></MudCheckBox>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                </MudContainer>
+            </DialogContent>
+            <DialogActions>
+                <MudButton DisableElevation Variant="Variant.Text" Disabled="IsProcessing" OnClick="Cancel">CANCEL</MudButton>
+                <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" ButtonType="ButtonType.Submit" Color="Color.Secondary">
+                    @if (IsProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    }
+                    else
+                    {
+                        <span>UPDATE</span>
+                    }
+                </MudButton>
+
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+
+</MudContainer>

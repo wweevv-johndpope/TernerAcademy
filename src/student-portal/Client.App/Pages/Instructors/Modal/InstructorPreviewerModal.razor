@@ -1,0 +1,109 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" Style="max-height: 80vh; overflow-y: scroll">
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+        <DialogContent>
+            <MudPaper Square Elevation="0" Class="pt-0 pb-4 px-2">
+                @if (!IsLoaded)
+                {
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="200px" Width="100%" />
+                }
+                else
+                {
+                    <MudPaper Square="true" Elevation="10" Class="mt-4 d-flex flex-column pa-4 grey darken-4">
+                        <div class="d-flex mt-2">
+                            <MudAvatar Size="Size.Large" Style="height:80px; width:80px;" Class="grey darken-4" Image="@Instructor.ProfilePictureUri"></MudAvatar>
+
+                            <div class="align-self-center ml-4">
+                                <MudText Typo="Typo.h5">@Instructor.Name</MudText>
+                                <MudText Typo="Typo.subtitle2">@Instructor.CompanyName</MudText>
+                            </div>
+                        </div>
+
+                        <div class="mt-2">
+                            <MudText Typo="Typo.subtitle1" Class="mt-2">
+                                @((MarkupString)@Instructor.Bio.ToEmptyIfNull().Replace(Environment.NewLine,"<br />"))
+                            </MudText>
+                        </div>
+
+                        <div Class="mt-2">
+                            <div>
+                                @foreach (var community in Instructor.Commmunities)
+                                {
+                                    var icon = @Icons.Custom.Brands.MudBlazor;
+
+                                    switch (community.Platform)
+                                    {
+                                        case "Twitter": icon = @Icons.Custom.Brands.Twitter; break;
+                                        case "Telegram": icon = @Icons.Custom.Brands.Telegram; break;
+                                        case "Instagram": icon = @Icons.Custom.Brands.Instagram; break;
+                                    }
+
+                                    <MudChip Class="my-1 mr-1" Color="Color.Primary" Variant="Variant.Text" Icon="@icon" Size="Size.Small">@string.Concat("@", community.HandleName)</MudChip>
+                                }
+                            </div>
+                        </div>
+                    </MudPaper>
+
+                    <MudText Typo="Typo.h5" Color="Color.Primary" Class="mt-4">Courses</MudText>
+                    <MudPaper Square="true" Elevation="0" Class="pt-4">
+                        @if (!IsLoadedCourses)
+                        {
+                            <MudGrid Spacing="4">
+                                @for (int i = 0; i < 3; i++)
+                                {
+                                    <MudItem xs="12" sm="4">
+                                        <MudCard Elevation="10" Class="grey darken-4">
+                                            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="300px" Width="100%" />
+                                            <MudCardContent>
+                                                <MudSkeleton Animation="Animation.Wave" Height="60px" />
+                                            </MudCardContent>
+                                        </MudCard>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        }
+                        else
+                        {
+                            @if (!Courses.Any())
+                            {
+                                <MudText Typo="Typo.body1" Class="text-white mt-2">
+                                    No uploaded course yet...
+                                </MudText>
+                            }
+                            else
+                            {
+                                <MudGrid Spacing="4">
+                                    @foreach (var course in Courses)
+                                    {
+
+                                        <MudItem xs="12" sm="4">
+                                            <MudCard Elevation="10" Class="grey darken-4">
+                                                <MudCardMedia Image="@course.ThumbnailImageUri" Height="300" />
+                                                <MudCardContent>
+                                                    <div class="d-flex justify-space-between">
+                                                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="align-self-center text-limit-1"><b>@course.Name.ToUpper()</b></MudText>
+                                                        <MudChip Class="align-self-center cursor-pointer" Size="Size.Medium" Color="Color.Secondary">
+                                                            <MudText Class="mr-2" Typo="Typo.body1">
+                                                                @course.PriceInTFuel
+                                                            </MudText>
+                                                            <MudAvatar Style="height:20px; width:20px;" Color="Color.Secondary" Image="@AppIcons.TFuelLogo"></MudAvatar>
+                                                        </MudChip>
+                                                    </div>
+                                                    <div class="align-self-center mt-2 d-flex flex-wrap">
+                                                        <MudChip Class="my-1 mr-1" Size="Size.Small" Variant="Variant.Text" Color="Color.Secondary">@course.Language</MudChip>
+                                                        <MudChip Class="my-1 mr-1" Size="Size.Small" Variant="Variant.Text" Color="Color.Secondary">@course.Level</MudChip>
+                                                        <MudChip Class="my-1 mr-1" Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@course.EnrolledCount <MudIcon Icon="@Icons.Material.Filled.Groups" Style="font-size: 1rem" Class="ml-2" /></MudChip>
+                                                        <MudChip Class="my-1 mr-1" Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary"><MudIcon Icon="@Icons.Material.Filled.StarRate" Style="font-size: 1rem" Class="mr-1" /> @course.AverageRating.ToString("N2") (@course.RatingCount)</MudChip>
+                                                    </div>
+                                                </MudCardContent>
+                                            </MudCard>
+                                        </MudItem>
+                                    }
+                                </MudGrid>
+                            }
+                        }
+                    </MudPaper>
+                }
+            </MudPaper>
+        </DialogContent>
+    </MudDialog>
+</MudContainer>

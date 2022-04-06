@@ -1,0 +1,185 @@
+﻿@page "/course/{CourseId:int}"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+    <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="align-self-center" Typo="Typo.h5" GutterBottom="false">Course Details</MudText>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="align-self-center" Typo="Typo.h4" GutterBottom="false">Course Details</MudText>
+        </MudHidden>
+    </div>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    @if (!IsLoaded)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        <MudSkeleton Class="mt-4" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="216px" Width="100%" />
+
+        <MudSkeleton Class="mt-4" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="1200px" Width="100%" />
+    }
+    else
+    {
+        <MudPaper Square="true" Elevation="10" Class="d-flex flex-column flex-wrap pa-4 grey darken-4">
+            <div>
+                <div class="d-flex justify-space-between">
+                    <MudText Typo="Typo.h5" Class="align-self-center text-white">Course Information</MudText>
+                    <MudChip Class="align-self-center" Size="Size.Medium" Color="Color.Secondary">
+                        <MudText Class="mr-2" Typo="Typo.body1">
+                            @Course.PriceInTFuel
+                        </MudText>
+                        <MudAvatar Style="height:20px; width:20px;" Color="Color.Secondary" Image="@AppIcons.TFuelLogo"></MudAvatar>
+                    </MudChip>
+                </div>
+                <MudText Typo="Typo.body1" Class="text-white mt-2"><b>Title:</b></MudText>
+                <MudText Typo="Typo.body1" Class="text-white mt-2">@Course.Name</MudText>
+                <MudText Typo="Typo.body1" Class="text-white mt-2"><b>Short Description:</b></MudText>
+                <MudText Typo="Typo.body1" Class="text-white mt-2">@Course.ShortDescription</MudText>
+                <MudText Typo="Typo.body1" Class="text-white mt-2"><b>Description:</b></MudText>
+                <MudText Typo="Typo.body1" Class="text-white mt-2">
+                    @((MarkupString)@Course.Description.ToEmptyIfNull().Replace(Environment.NewLine,"<br />"))
+                </MudText>
+            </div>
+
+            <div class="d-flex flex-wrap mt-2">
+                <MudChip Size="Size.Small" Color="Color.Primary"><b>@Course.ListingStatus.GetDescription()</b></MudChip>
+                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@Course.Language</MudChip>
+                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@Course.Level</MudChip>
+                @if (Course.ListingStatus == CourseListingStatus.Approved)
+                {
+                    <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary"><MudIcon Icon="@Icons.Material.Filled.Groups" Style="font-size: 1rem" Class="mr-2" /> @("student".ToQuantity(Course.EnrolledCount))</MudChip>
+                    <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary"> <MudIcon Icon="@Icons.Material.Filled.StarRate" Style="font-size: 1rem" Class="mr-1" /> @Course.AverageRating.ToString("N2") (@("student".ToQuantity(Course.RatingCount)))</MudChip>
+                }
+
+                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@TimeSpan.FromMilliseconds(double.Parse(Course.Duration.ToString())).Humanize(3, countEmptyUnits:true, maxUnit: TimeUnit.Hour, minUnit: TimeUnit.Second)</MudChip>
+                @foreach (var topic in @Course.Topics.Split(','))
+                {
+                    <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Secondary">@topic</MudChip>
+                }
+            </div>
+
+            <div class="mt-2">
+                <MudButton Class="my-2 mr-2" EndIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="InvokeUpdateCourseModalAsync">Edit</MudButton>
+                @if (Course.ListingStatus == CourseListingStatus.Draft)
+                {
+                    <MudButton Class="my-2 mr-2" EndIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Primary" OnClick="InvokeUploadLessonModalAsync">Add Lesson</MudButton>
+                }
+                @if (Course.ListingStatus == CourseListingStatus.Draft)
+                {
+                    <MudButton Class="my-2 mr-2" EndIcon="@Icons.Material.Filled.Publish" Variant="Variant.Filled" Color="Color.Secondary" OnClick="InvokePublishCourseModalAsync">Publish</MudButton>
+                }
+            </div>
+        </MudPaper>
+
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Typo="Typo.h5" Class="mt-4" Color="Color.Primary">Course Thumbnail</MudText>
+            <MudPaper Square="true" Elevation="10" Class="mt-2 pa-4 grey darken-4">
+                <div class="d-flex justify-start mt-4">
+                    <div style="position:relative;" @onmouseover="(() => ToggleThumbnailOvelay(true))" @onmouseleave="(() => ToggleThumbnailOvelay(false))">
+                        @*<MudAvatar Square="true" Size="Size.Large" Style="height:300px; width:450px; font-size:2rem;" Image="@Course.ThumbnailImageUri"></MudAvatar>*@
+                        <img src="@Course.ThumbnailImageUri" width="450" />
+                        <InputFile id="Photo1" OnChange="((InputFileChangeEventArgs args) => OnThumbnailChange(args))" hidden accept=".jpg, .jpeg, .png" />
+
+                        <MudOverlay Visible="IsThumbnailOverlayVisible" Absolute="true">
+                            @if (!IsUploadingThumbnail)
+                            {
+                                <MudFab HtmlTag="label" Color="Color.Primary" Icon="@Icons.Filled.CloudUpload" for="Photo1" />
+                            }
+                        </MudOverlay>
+
+                        <MudOverlay Visible="IsUploadingThumbnail" DarkBackground="true" Absolute="true">
+                            <MudProgressCircular Class="ms-n1" Indeterminate="true" Color="Color.Primary" />
+                        </MudOverlay>
+                    </div>
+                </div>
+            </MudPaper>
+        </MudHidden>
+
+        <MudText Typo="Typo.h5" Color="Color.Primary" Class="mt-4">
+            Course Lessons <MudIconButton Class="ml-2 align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Icon="@Icons.Material.Filled.Refresh" OnClick="FetchCourseDetailsAsync" />
+        </MudText>
+        <MudPaper Square="true" Elevation="10" Class="mt-2 pa-4 grey darken-4">
+
+
+            @if (IsFetchingLessons)
+            {
+
+            }
+            else
+            {
+                @if (!Lessons.Any())
+                {
+                    <MudText Class="text-white" Typo="Typo.h6">Hmm.. You don't have any uploaded lessons yet..</MudText>
+                }
+                else
+                {
+                    <MudTable Items="@Lessons" Class="my-4 mx-0 grey darken-3" Breakpoint="Breakpoint.None">
+                        <HeaderContent>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Status</MudTh>
+                            <MudTh>Duration</MudTh>
+                            <MudTh>Preview</MudTh>
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Name">@context.Name</MudTd>
+                            <MudTd DataLabel="Status">
+                                @(context.IsProcessing ? "Processing" : "Available")
+                            </MudTd>
+                            <MudTd DataLabel="Duration">
+                                @(context.IsProcessing ? "Processing" : @TimeSpan.FromMilliseconds(double.Parse(@context.Duration.ToString())).Humanize(3, countEmptyUnits:true, maxUnit: TimeUnit.Hour, minUnit: TimeUnit.Second))
+                            </MudTd>
+                            <MudTd DataLabel="Preview">
+                                <MudButton Disabled="@context.IsProcessing" Color="Color.Primary" OnClick="(() => InvokeCourseLessonPreviewOverlay(context))" Size="Size.Small">
+                                    @(context.IsProcessing ? "Processing" : "Preview")
+                                </MudButton>
+                            </MudTd>
+                            <MudTd Style="text-align: right">
+                                @if (IsProcessingOrdering)
+                                {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                                }
+                                else if (!IsProcessingOrdering)
+                                {
+                        <MudIconButton Icon="@Icons.Material.Filled.Preview" Size="Size.Small" Color="Color.Primary" OnClick="(() => InvokeLessonPreviewerModal(context))"></MudIconButton>
+
+                        @if (Lessons.Count > 1)
+                                    {
+                            @if (Lessons.IndexOf(context) > 0)
+                                        {
+                                <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Disabled="IsProcessingOrdering" Size="Size.Small" Color="Color.Primary" OnClick="(() => MoveLessonAsync(context, true))"></MudIconButton>
+                                        }
+                            @if (Lessons.IndexOf(context) < Lessons.Count - 1)
+                                        {
+                                <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward" Disabled="IsProcessingOrdering" Size="Size.Small" Color="Color.Primary" OnClick="(() => MoveLessonAsync(context, false))"></MudIconButton>
+                                        }
+                                    }
+
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" OnClick="(() => InvokeUpdateLessonModalAsync(context))"></MudIconButton>
+
+                                    if (Course.ListingStatus == CourseListingStatus.Draft)
+                                    {
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="(() => InvokeDeleteLessonModalAsync(context))"></MudIconButton>
+                                    }
+                                }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+                }
+
+            }
+
+        </MudPaper>
+
+        <MudOverlay @bind-Visible="IsVideoOverlayVisible" DarkBackground="true" AutoClose="true" ZIndex="9999">
+            <iframe src="@CurrentLesson.FinalVideoPathUri" style="@VideoOverlayStyle"
+                border="0"
+                allowfullscreen />
+        </MudOverlay>
+    }
+
+</MudContainer>
+

@@ -1,0 +1,76 @@
+﻿@page "/purchase-history"
+
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.False">
+ <div class="d-flex">
+        <MudHidden Breakpoint="Breakpoint.SmAndUp">
+            <MudText Class="mr-4 align-self-center" Typo="Typo.h5" GutterBottom="false">Purchase History</MudText>
+            <MudIconButton Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Icon="@Icons.Material.Filled.Refresh" OnClick="FetchCourseSubscriptionsAsync"/>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.Xs">
+            <MudText Class="mr-4 align-self-center" Typo="Typo.h4" GutterBottom="false">Purchase History</MudText>
+            <MudIconButton Class="align-self-center" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Icon="@Icons.Material.Filled.Refresh" OnClick="FetchCourseSubscriptionsAsync" />
+        </MudHidden>
+    </div>
+</MudContainer>
+
+
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    @if (!IsLoaded)
+    {
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="56px" Width="100%" />
+        <MudSkeleton Class="mt-4" SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="560px" Width="100%" />
+    }
+    else
+    {
+        @if (!Purchases.Any())
+        {
+            <MudText Typo="Typo.h5" Class="my-4">
+                You haven't bought any course yet...
+            </MudText>
+        }
+        else
+        {
+            <MudPaper Square="true" Elevation="0" Class="mt-4 px-0 py-4">
+                <MudTable Items="@Purchases" Class="my-4 mx-0 grey darken-3" Breakpoint="Breakpoint.SmAndUp">
+                    <HeaderContent>
+                        <MudTh>Date Bought</MudTh>
+                        <MudTh>Course</MudTh>
+                        <MudTh>Instructor</MudTh>
+                        <MudTh>Amount Paid</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            <MudText class="d-flex align-self-center">
+                                @context.DateBought.ToCurrentTimeZone().ToString(ClientConstants.ShortDateTimeFormat)
+                            </MudText>
+                        </MudTd>
+                        <MudTd>
+                            <MudText class="d-flex align-self-center">
+                                @context.CourseName
+                            </MudText>
+                        </MudTd>
+                        <MudTd>
+                            <div>
+                                <MudText class="d-flex align-self-center">
+                                    <MudAvatar Size="Size.Small" Class="mr-2 grey darken-3 align-self-center" Image="@context.InstructorProfilePictureUri"></MudAvatar>
+                                    @context.InstructorName
+                                </MudText>
+                            </div>
+                        </MudTd>
+                        <MudTd>
+                            <MudText class="d-flex align-self-center">
+                                <span class="align-self-center">@context.BuyAmount.ToString("N2")</span>
+                                <MudAvatar Style="height:20px; width:20px;" Class="mx-2 grey darken-3 align-self-center" Image="@AppIcons.TFuelLogo"></MudAvatar>
+                                <MudIconButton Icon="@Icons.Material.Filled.ReceiptLong" Variant="Variant.Filled" Color="Color.Primary" Class="align-self-center" Size="Size.Small" OnClick="(() => InvokeTransactionPreviewerModal(context.BuyTx))"></MudIconButton>
+                            </MudText>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudPaper>
+        }
+
+    }
+</MudContainer>

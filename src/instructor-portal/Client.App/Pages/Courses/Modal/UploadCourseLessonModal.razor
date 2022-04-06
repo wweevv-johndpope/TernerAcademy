@@ -1,0 +1,49 @@
+﻿<MudContainer Class="pa-0 ma-0" MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll">
+    <EditForm Model="@Model" OnValidSubmit="UploadAsync">
+        <FluentValidationValidator @ref="_fluentValidationValidator" />
+        <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+            <DialogContent>
+                <MudContainer MaxWidth="MaxWidth.False">
+                    <MudGrid Class="pt-0 pb-4 px-2">
+                        <MudItem xs="12">
+                            <MudTextField T="string" Variant="Variant.Outlined" For="@(() => Model.LessonName)" Disabled="IsProcessing" @bind-Value="Model.LessonName" Placeholder="Name of the Lesson" Label="Title" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField T="string" Variant="Variant.Outlined" For="@(() => Model.LessonNotes)" Lines="7" Disabled="IsProcessing" @bind-Value="Model.LessonNotes" Placeholder="Lesson Notes" Label="Lesson Notes" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudCheckBox Color="Color.Primary" Disabled="IsProcessing" @bind-Checked="@Model.LessonIsPreviewable" Label="Playable on Course Preview?"></MudCheckBox>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudText>Video File</MudText>
+                            <InputFile id="File2" OnChange="((InputFileChangeEventArgs args) => OnFileChanged(args))" hidden="true" accept="@Application.Common.Constants.AppConstants.AllowableVideoFormat" />
+                            <MudButton Class="mt-2" Disabled="IsProcessing" HtmlTag="label" Color="Color.Secondary" Variant="Variant.Filled" ButtonType="ButtonType.Button" for="File2">Browse</MudButton>
+                            <MudText Class="mt-2" Color="Color.Info" Typo="Typo.body2">@SelectedFileNameDisplay</MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudText Color="Color.Info" Typo="Typo.caption">Please don't close the modal or refresh the browser while uploading a lesson.</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudContainer>
+            </DialogContent>
+            <DialogActions>
+                <MudButton DisableElevation Variant="Variant.Text" Disabled="IsProcessing" OnClick="Cancel">CANCEL</MudButton>
+                <MudButton DisableElevation Variant="Variant.Filled" Disabled="IsProcessing" ButtonType="ButtonType.Submit" Color="Color.Secondary">
+                    @if (IsProcessing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    }
+                    else
+                    {
+                        <span>UPLOAD</span>
+                    }
+                </MudButton>
+
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+</MudContainer>

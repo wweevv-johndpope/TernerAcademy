@@ -1,0 +1,22 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" Style="max-height: 80vh; overflow-y: scroll">
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+        <DialogContent>
+            <MudGrid Class="pt-0 pb-4 px-0">
+                <MudItem xs="12" lg="6">
+                    <iframe style="min-height: 40vh; max-height: 60vh;" src="@Lesson.FinalVideoPathUri" border="0" allowfullscreen />
+                </MudItem>
+                <MudItem xs="12" lg="6">
+                    <MudText Typo="Typo.body1" Class="text-white"><b>Lesson</b></MudText>
+                    <MudText Typo="Typo.body1" Class="text-white mt-2" Align="Align.Justify">
+                        @Lesson.Name
+                    </MudText>
+                    
+                    <MudText Typo="Typo.body1" Class="text-white mt-2"><b>Notes</b></MudText>
+                    <MudText Typo="Typo.body1" Class="text-white mt-2" Align="Align.Justify">
+                        @((MarkupString)@Lesson.Notes.ToEmptyIfNull().Replace(Environment.NewLine,"<br />"))
+                    </MudText>
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+    </MudDialog>
+</MudContainer>

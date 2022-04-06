@@ -1,0 +1,22 @@
+﻿<MudContainer MaxWidth="MaxWidth.False" style="max-height: 80vh; overflow-y: scroll;">
+    <MudDialog DisableSidePadding="true" ClassActions="px-2 py-4">
+        <DialogContent>
+            <div>
+                @if (!IsLoaded)
+                {
+                    <div>
+                        <MudSkeleton Animation="Animation.Wave" Height="100px" Width="100%" />
+                    </div>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body1" Class="text-white">
+                        <pre>
+                            @((MarkupString)Display.ToEmptyIfNull())
+                            </pre>
+                    </MudText>
+                }
+            </div>
+        </DialogContent>
+    </MudDialog>
+</MudContainer>

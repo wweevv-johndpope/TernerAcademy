@@ -1,0 +1,50 @@
+﻿@inherits LayoutComponentBase
+
+@namespace Client.App.Shared
+
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MainLayout> localizer
+
+<MudThemeProvider Theme="CurrentTheme" IsDarkMode="true" />
+<MudDialogProvider Position="DialogPosition.Center" MaxWidth="MaxWidth.Small" FullWidth="true" CloseButton="false" DisableBackdropClick="true" CloseOnEscapeKey="false" />
+<MudSnackbarProvider />
+
+@if (IsAuthenticated)
+{
+    <MudLayout>
+        <MudAppBar Elevation="5" Dense="false">
+            <AppBarContent />
+        </MudAppBar>
+        <MudDrawer @bind-Open="DrawerOpen" Elevation="10" Width="300px" Variant="@DrawerVariant.Mini" ClipMode="DrawerClipMode.Never">
+            @if (!DrawerOpen)
+            {
+                <MudDrawerHeader Class="py-2 px-4">
+                    <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center" Class="text-lobster my-1">T</MudText>
+                </MudDrawerHeader>
+            }
+            else
+            {
+                <MudDrawerHeader>
+                    <div>
+                        <MudText Typo="Typo.h4" Color="Color.Primary" Class="text-lobster my-1">Terner Academy</MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="mt-4">Instructor Portal</MudText>
+                    </div>
+                </MudDrawerHeader>
+            }
+
+            <MudNavMenu Rounded="true" Margin="Margin.Dense">
+                <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+                <MudNavGroup Title="Course Management" Icon="@Icons.Material.Filled.Dvr" Expanded="true">
+                    <MudNavLink Href="/courses" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CastForEducation">Courses</MudNavLink>
+                    <MudNavLink Href="/course/reviews" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Star">Reviews</MudNavLink>
+                    <MudNavLink Href="/course/subscriptions" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CurrencyBitcoin">Subscriptions</MudNavLink>
+                </MudNavGroup>
+                <MudNavLink Href="/profile" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountCircle">My Profile</MudNavLink>
+            </MudNavMenu>
+        </MudDrawer>
+        <MudMainContent>
+            <MudContainer MaxWidth="MaxWidth.False" Class="mt-4 mb-2 px-2 px-sm-4 py-4">
+                @Body
+            </MudContainer>
+        </MudMainContent>
+    </MudLayout>
+}
