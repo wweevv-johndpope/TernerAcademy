@@ -14,7 +14,7 @@
 - After completing the Azure Cloud Prerequisites
 - Open Terner.Student.Portal.sln on Visual Studio
 - Look for a file named ***Server.cs***
-- Update the necessary values and point it to your API, please see [API Setup Guide](../backend/README.Backend.md)
+- Update the necessary values and point it to your API, please see [API Setup Guide](../backend/README.md)
 - Set **Client.App** Project as Startup Project
 - Click Run or Press F5.
 - If you wish to publish the app to Azure App Service, please see [Guide](https://docs.microsoft.com/en-us/visualstudio/deployment/quickstart-deploy-aspnet-web-app?view=vs-2022&tabs=azure)
