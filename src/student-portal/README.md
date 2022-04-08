@@ -1,4 +1,4 @@
-# Web Frontend App Guide
+# Web Frontend App Guide (Student Portal)
 
 ## Prerequisites
 - C#/.NET experience at a beginner level
