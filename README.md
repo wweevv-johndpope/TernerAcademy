@@ -44,7 +44,7 @@ As a student, they can be able to:
 - ETH RPC Adapter / API Server: Azure Virtual Machine 
 
 ## Setup Guides:
-- Web API/Web Jobs Setup Guide: **See [Web API Setup Guide](src/backend/README.Backend.md)**
-- Instructor Portal Setup Guide: **See [Guide](src/instructor-portal/README.Frontend.md)**
-- Student Portal Setup Guide: **See [Guide](src/student-portal/README.Frontend.md)**
+- Web API/Web Jobs Setup Guide: **See [Web API Setup Guide](src/backend/README.md)**
+- Instructor Portal Setup Guide: **See [Guide](src/instructor-portal/README.md)**
+- Student Portal Setup Guide: **See [Guide](src/student-portal/README.md)**
 
